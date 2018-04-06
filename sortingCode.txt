@@ -1,0 +1,64 @@
+ private string ConvertSortDirectionToSql(SortDirection sortDirection)
+    {
+        string newSortDirection = String.Empty;
+
+        switch (sortDirection)
+        {
+            case SortDirection.Ascending:
+                newSortDirection = "ASC";
+                break;
+
+            case SortDirection.Descending:
+                newSortDirection = "DESC";
+                break;
+        }
+
+        return newSortDirection;
+    }
+
+    protected void gridView_Sorting(object sender, GridViewSortEventArgs e)
+    {
+        DataTable dataTable = grdClerkView.DataSource as DataTable;
+
+        if (dataTable != null)
+        {
+            DataView dataView = new DataView(dataTable);
+            dataView.Sort = e.SortExpression + " " + ConvertSortDirectionToSql(e.SortDirection);
+
+            grdClerkView.DataSource = dataView;
+            grdClerkView.DataBind();
+        }
+    }
+
+ private string ConvertSortDirectionToSql(SortDirection sortDirection)
+    {
+        string newSortDirection = String.Empty;
+
+        switch (sortDirection)
+        {
+            case SortDirection.Ascending:
+                newSortDirection = "ASC";
+                break;
+
+            case SortDirection.Descending:
+                newSortDirection = "DESC";
+                break;
+        }
+
+        return newSortDirection;
+    }
+
+    protected void gridView_Sorting(object sender, GridViewSortEventArgs e)
+    {
+        string sortExpression = e.SortExpression;
+        hdnCol.Value = sortExpression;
+        if (hdntest.Value == "asc")
+        {
+            hdntest.Value = "desc";
+        }
+        else
+        {
+            hdntest.Value = "asc";
+        }
+        showCasesForClerkView(FilingStatuscd);
+    }

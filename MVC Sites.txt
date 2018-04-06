@@ -1,0 +1,1 @@
+https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/hands-on-labs/aspnet-mvc-4-models-and-data-access

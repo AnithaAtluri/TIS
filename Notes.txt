@@ -1,0 +1,288 @@
+TIS :
+
+Student Id  
+Last Name
+First Name
+MI
+Gender
+Grade
+Date Of Birth
+Action School
+Ethnicity
+Case Number
+Disposition
+
+
+dbo.Dispostion  : StudentID,CaseNumber,Disp Type
+dbo.Case :CaseNumber ,Disposition,Grade
+dbo.RISD_Schools : School,Name(SchoolName)
+dbo.Party : LastName,FirstName,MiddleName,Sexid,DOB,EthncityID
+***************************Final Query******************************************************
+
+select 
+
+(case c.offenseid when 4 then pdf.localpartyid when 2
+		 then pot.localpartyid else '' end) as [Student ID],
+	    (case c.offenseid when 4 then pdf.firstname + ' ' + pdf.lastname when 2
+		 then pot.firstname + ' ' + pot.lastname else '' end) as [Student Name],
+			s.SexDesc,c.Grade,pdf.DOB,E.EthnicityDesc,c.CaseNumber,
+			aisd.agencynumber + '-' + aisd.agencyname as ISD
+           ,asch.agencynumber + '-' + asch.agencyname as School,c.Disposition
+from TIS.dbo.[Case]  as c with(nolock) 
+left join TIS.dbo.[CaseParty] as  cpsch (nolock) on c.caseid = cpsch.caseid
+left join TIS.dbo.[Agency] as asch (nolock) on cpsch.agencyid = asch.agencyid
+left join TIS.dbo.[Agency] as aisd (nolock) on asch.parentagencyid = aisd.agencyid
+left join TIS.dbo.[CaseParty] as  cpdf (nolock) on c.caseid = cpdf.caseid
+left join TIS.dbo.[Party] as pdf (nolock) on cpdf.partyid = pdf.partyid
+left join TIS.dbo.[CaseParty] cpot (nolock) on c.caseid = cpot.caseid
+left join TIS.dbo.[Party] pot (nolock) on cpot.partyid = pot.partyid
+inner join TIS.dbo.[Offense] o (nolock) on o.OffenseID = c.OffenseID
+Inner Join TIS.dbo.[Agency] a (nolock) on A.AgencyID = c.CourtID
+
+left Join TIS.dbo.[Sex] S with(nolock) on s.SexID = pdf.SexID
+left join TIS.dbo.[Ethnicity] E (nolock) on pdf.EnthncityID = E.EthnicityID
+where c.FilingStatusCd = 9 
+--and c.FiledDate >= ('02-06-2016')
+and (c.FiledDate between ('01-01-2015') and ('01-01-2016'))
+and cpsch.casepartyrelationid = 3 	
+		and cpdf.casepartyrelationid = 2
+		and cpot.casepartyrelationid in (4,5) 
+		and aisd.AgencyID = 137
+		order by 1
+*************************************************************************************************************
+
+Trial Queries
+rows:163741
+Declare @StartTime datetime
+Declare @endtime datetime
+
+ Set @StartTime = '08/01/2009'
+ Set @endtime = '08/01/2010'
+
+select D.StudentID,P.LastName,P.FirstName,P.MiddleName,S.SexDesc as Gender,C.Grade,
+Convert(varchar(10),P.DOB,101)as DOB,R.RaceDesc as Ethnicity ,C.CaseNumber,D.DispType,D.EventDate
+,P.PartyID,CP.CaseID,D.ISDID
+,aisd.agencynumber + '-' + aisd.agencyname as ISD,
+asch.agencynumber + '-' + asch.agencyname as School
+from
+[dbo].[Case] C
+Inner join [dbo].[CaseParty] CP with(nolock) on CP.CaseID = C.CaseID
+left join agency asch (nolock) on CP.agencyid = asch.agencyid
+left join agency aisd (nolock) on asch.parentagencyid = aisd.agencyid
+Inner Join dbo.Party P with(nolock) on P.PartyID = CP.PartyID
+Inner Join dbo.Disposition D with(nolock) on C.CaseID = D.CaseID
+Inner Join dbo.Sex S with(nolock) on P.SexID = S.SexID
+Inner Join dbo.Race R with(Nolock) on P.RaceID=R.RaceID
+where D.EventDate between @StartTime and @endtime
+
+
+select P.LastName,P.FirstName,P.MiddleName,Convert(varchar(10),P.DOB,101)as DOB,
+C.CaseNumber,C.Grade,D.DispType,D.StudentID,S.SexDesc,R.RaceDesc,RISD.Name
+from dbo.CaseParty CP with(nolock)
+Inner Join dbo.Party P with(nolock) on P.PartyID = CP.PartyID
+Inner Join [dbo].[Case] C with(nolock) on CP.CaseID = C.CaseID
+Inner Join dbo.Disposition D with(nolock) on C.CaseID = D.CaseID
+inner join dbo.RISD_Schools RISD with(nolock) on RISD.COUNTY_DISTRICT = '057916'
+left outer join dbo.Sex S with(nolock) on P.SexID = S.SexID
+left outer join dbo.Race R with(Nolock) on P.RaceID=R.RaceID
+
+Example:
+
+
+	left join dbo.[caseparty] (nolock) cp on c.caseid = cp.caseid
+	and cp.casepartyrelationid = 
+	(case when c.offenseid = 1 then 2 when c.offenseid = 2 then 4 else 4 end)
+	left join dbo.[party] (nolock) p on cp.partyid = p.partyid
+	left join dbo.Agency (nolock) a on c.courtid = a.agencyid
+	where --c.caseid =@caseid
+	c.updatedatetime between @startdatetime and @enddatetime
+	and c.disposition is not null
+
+ForeignKeys:
+
+SELECT
+    K_Table = FK.TABLE_NAME,
+    FK_Column = CU.COLUMN_NAME,
+    PK_Table = PK.TABLE_NAME,
+    PK_Column = PT.COLUMN_NAME,
+    Constraint_Name = C.CONSTRAINT_NAME
+FROM
+    INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C
+INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK
+    ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME
+INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK
+    ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME
+INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU
+    ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME
+INNER JOIN (
+            SELECT
+                i1.TABLE_NAME,
+                i2.COLUMN_NAME
+            FROM
+                INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1
+            INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2
+                ON i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME
+            WHERE
+                i1.CONSTRAINT_TYPE = 'PRIMARY KEY'
+           ) PT
+    ON PT.TABLE_NAME = PK.TABLE_NAME
+
+
+StoredProc:CaseFilingReport
+
+  -- Insert statements for procedure here
+	select 
+aisd.agencynumber + '-' + aisd.agencyname as ISD,
+asch.agencynumber + '-' + asch.agencyname as School,
+(case offenseid when 1 then pdf.localpartyid when 2
+ then pot.localpartyid else '' end) as [Student ID],
+(case offenseid when 1 then pdf.firstname + ' ' + pdf.lastname when 2
+ then pot.firstname + ' ' + pot.lastname else '' end) as [Student Name],
+(case offenseid when 1 then pot.firstname + ' ' + pot.lastname when 2
+ then pdf.firstname + ' ' + pdf.lastname else '' end) as [Parent/Guardian Name],
+c.caseid as [TIS Case ID],
+c.casenumber as [Odyssey Case #],
+c.fileddate as [Filed Date],
+c.insertdatetime as [Received Date]
+from [case] c (nolock)
+left join caseparty cpsch (nolock) on c.caseid = cpsch.caseid
+left join agency asch (nolock) on cpsch.agencyid = asch.agencyid
+left join agency aisd (nolock) on asch.parentagencyid = aisd.agencyid
+left join caseparty cpdf (nolock) on c.caseid = cpdf.caseid
+left join party pdf (nolock) on cpdf.partyid = pdf.partyid
+left join caseparty cpot (nolock) on c.caseid = cpot.caseid
+left join party pot (nolock) on cpot.partyid = pot.partyid
+ where not exists
+(select caseid from tis_stage..MessageTable m
+ where m.caseid = c.caseid)
+and c.fileddate between @StartTime and @endtime
+and c.filingstatuscd in (7,9)
+and cpsch.casepartyrelationid = 3
+and cpdf.casepartyrelationid = 2
+and cpot.casepartyrelationid in (4,5)
+order by 1,2,3
+END
+
+
+test1:
+
+Declare @StartTime datetime
+Declare @endtime datetime
+
+ Set @StartTime = '01/08/1992'
+ Set @endtime = '01/08/2010'
+  
+ 
+select aisd.agencynumber + '-' + aisd.agencyname as ISD,
+asch.agencynumber + '-' + asch.agencyname as School,
+D.StudentID,D.ISDID,
+P.LastName,P.FirstName,P.MiddleName,Convert(varchar(10),P.DOB,101)as DOB
+from
+[dbo].[Case] C
+inner join CaseParty CP (nolock) on c.CaseID = CP.CaseID
+inner join agency asch (nolock) on CP.agencyid = asch.agencyid
+inner join agency aisd (nolock) on asch.parentagencyid = aisd.agencyid
+Inner Join dbo.Disposition D with(nolock) on C.CaseID = D.CaseID
+inner join CaseParty CP1 (nolock) on c.CaseID = CP1.CaseID
+Inner Join dbo.Party P with(nolock) on P.PartyID = CP1.PartyID
+where D.EventDate between @StartTime and @endtime
+
+
+test2:
+
+Declare @StartTime datetime
+Declare @endtime datetime
+
+ Set @StartTime = '08/01/2009'
+ Set @endtime = '08/01/2010'
+
+select aisd.agencynumber + '-' + aisd.agencyname as ISD,
+asch.agencynumber + '-' + asch.agencyname as School,
+D.StudentID,P.LastName,P.FirstName,P.MiddleName,S.SexDesc as Gender,C.Grade,
+Convert(varchar(10),P.DOB,101)as DOB,R.RaceDesc as Ethnicity ,C.CaseNumber,D.DispType,D.EventDate
+,P.PartyID,CP.CaseID,D.ISDID
+from
+[dbo].[Case] C
+left join [dbo].[CaseParty] CP with(nolock) on CP.CaseID = C.CaseID
+left join agency asch (nolock) on CP.agencyid = asch.agencyid
+left join agency aisd (nolock) on asch.parentagencyid = aisd.agencyid
+Inner Join dbo.Party P with(nolock) on P.PartyID = CP.PartyID
+Inner Join dbo.Disposition D with(nolock) on C.CaseID = D.CaseID
+
+
+Inner Join dbo.Sex S with(nolock) on P.SexID = S.SexID
+Inner Join dbo.Race R with(Nolock) on P.RaceID=R.RaceID
+--Inner Join Agency A with(nolock) on C.Courtid = A.Agencyid
+where D.EventDate between @StartTime and @endtime
+
+Working without School:
+
+
+Declare @StartTime datetime
+Declare @endtime datetime
+
+ Set @StartTime = '08/01/2009'
+ Set @endtime = '08/01/2010'
+ 
+ select 
+D.StudentID,P.LastName,P.FirstName,P.MiddleName,S.SexDesc as Gender,C.Grade,
+Convert(varchar(10),P.DOB,101)as DOB,R.RaceDesc as Ethnicity ,C.CaseNumber,D.DispType,D.EventDate
+,P.PartyID,CP.CaseID,D.ISDID
+from
+[dbo].[Case] C
+Inner join [dbo].[CaseParty] CP with(nolock) on CP.CaseID = C.CaseID
+Inner Join dbo.Party P with(nolock) on P.PartyID = CP.PartyID
+Inner Join dbo.Disposition D with(nolock) on C.CaseID = D.CaseID
+Inner Join dbo.Sex S with(nolock) on P.SexID = S.SexID
+Inner Join dbo.Race R with(Nolock) on P.RaceID=R.RaceID
+
+where D.EventDate between @StartTime and @endtime
+
+Working with ISD without school Name:
+
+
+Declare @StartTime datetime
+Declare @endtime datetime
+
+ Set @StartTime = '08/01/2009'
+ Set @endtime = '08/01/2010'
+ 
+ select 
+D.StudentID,P.LastName,P.FirstName,P.MiddleName,S.SexDesc as Gender,C.Grade,
+Convert(varchar(10),P.DOB,101)as DOB,R.RaceDesc as Ethnicity ,C.CaseNumber,D.DispType,D.EventDate
+,aisd.agencynumber + '-' + aisd.agencyname as [ISD]
+from
+[dbo].[Case] C
+Inner join [dbo].[CaseParty] CP with(nolock) on CP.CaseID = C.CaseID
+Inner Join dbo.Party P with(nolock) on P.PartyID = CP.PartyID
+Inner Join dbo.Disposition D with(nolock) on C.CaseID = D.CaseID
+Inner Join Agency aisd with(nolock) on aisd.AgencyId = D.ISDID
+Inner Join dbo.Sex S with(nolock) on P.SexID = S.SexID
+Inner Join dbo.Race R with(Nolock) on P.RaceID=R.RaceID
+
+where D.EventDate between @StartTime and @endtime
+and D.ISDID = 132
+
+
+
+Richardson schools :
+
+select * from Agency with(nolock)
+where AgencyNumber = '057916'
+
+select * from Agency with(nolock)
+where  parentAgencyID = 132
+order by AgencyName 
+
+Richardson Schools only:
+
+select aisd.agencynumber + '-' + aisd.agencyname as ISD,
+asch.agencynumber + '-' + asch.agencyname as School
+from  agency asch (nolock) 
+inner join agency aisd (nolock) on asch.parentagencyid = aisd.agencyid
+where 
+asch.parentagencyid = 132
+order by 
+asch.agencynumber + '-' + asch.agencyname
+
+FINAL Query ----------------

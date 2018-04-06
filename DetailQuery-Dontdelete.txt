@@ -1,0 +1,32 @@
+
+select c.CaseID,c.CaseNumber,c.FiledDate,CE.CaseEventType
+,u.UserName + '-'+ R.RoleName as LastUserModifiedWithRole,
+o.OffenseCode
+,a.AgencyName as CourtName
+,aisd.agencynumber + '-' + aisd.agencyname as ISD
+,asch.agencynumber + '-' + asch.agencyname as School,
+		(case c.offenseid when 4 then pdf.localpartyid when 2
+		 then pot.localpartyid else '' end) as [Student ID],
+		(case c.offenseid when 4 then pdf.firstname + ' ' + pdf.lastname when 2
+		 then pot.firstname + ' ' + pot.lastname else '' end) as [Student Name],
+		(case c.offenseid when 4 then pot.firstname + ' ' + pot.lastname when 2
+		 then pdf.firstname + ' ' + pdf.lastname else '' end) as [Parent/Guardian Name]
+	
+from TIS.dbo.[Case]  as c with(nolock) 
+left join TIS.dbo.[CaseParty] as  cpsch (nolock) on c.caseid = cpsch.caseid
+left join TIS.dbo.[Agency] as asch (nolock) on cpsch.agencyid = asch.agencyid
+left join TIS.dbo.[Agency] as aisd (nolock) on asch.parentagencyid = aisd.agencyid
+left join TIS.dbo.[CaseParty] as  cpdf (nolock) on c.caseid = cpdf.caseid
+left join TIS.dbo.[Party] as pdf (nolock) on cpdf.partyid = pdf.partyid
+left join TIS.dbo.[CaseParty] cpot (nolock) on c.caseid = cpot.caseid
+left join TIS.dbo.[Party] pot (nolock) on cpot.partyid = pot.partyid
+inner join TIS.dbo.[Offense] o (nolock) on o.OffenseID = c.OffenseID
+Inner Join TIS.dbo.[Agency] a (nolock) on A.AgencyID = c.CourtID
+Inner Join TIS.dbo.[User] u (nolock) on c.LastUserID = u.UserID
+Inner Join TIS.dbo.[Role] R (nolock) on u.RoleID = r.RoleID
+Inner Join TIS.dbo.[CaseEventType] CE (nolock) on c.FilingStatusCd = CE.CaseEventTypeID
+where c.FilingStatusCd = 9 and c.FiledDate >= ('02-09-2017')
+and cpsch.casepartyrelationid = 3 	-- 3-->Complainant
+		and cpdf.casepartyrelationid = 2 -- 2-->Defendant
+		and cpot.casepartyrelationid in (4,5)  -- 4 ->Student ,5->Guardian
+order by 1 

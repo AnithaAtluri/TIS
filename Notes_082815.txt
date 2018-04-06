@@ -1,0 +1,24 @@
+prodn: http://tis.dallascounty.org/tis
+test:http://10.10.101.154/TIS/Message.aspx
+
+Create Party: 2 parties one student next Parent or Gaurdian
+Create case
+Depending on the roles the user see's only particular schools
+
+ 2 Types of Filing : Manual and E-File 
+Manual : Open TIS and enter the info
+E-File : Uses Webservice to display info back n forth b/w TIS and ODddseey
+
+
+1) Security role for the Judge
+Only Cases belongs to that judge or court - Mass display of Case info
+2) Secuirty role for the DA 
+Only Cases belongs to DA - Display Individual case information 
+3)Judge Review Queue : 
+  Accept Button , DA Review Queue ,Create Petition Doc and Attach Case
+3) DA Review Que:
+   Accept Button in Detail Page ,once accepted Save Event 
+4) Save
+5)Filed
+
+

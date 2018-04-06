@@ -1,0 +1,128 @@
+ //case(int)RoleType.TruancyJudge:
+           
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(0);
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(0);
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(0); 
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(0);
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+            //    TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+            //    TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(1);
+            //    TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(1);
+            //    break;
+
+            case (int)RoleType.CivilDistrictAttorney:
+                
+                //TreeView1.Nodes[0].ChildNodes.RemoveAt(0); 
+                //TreeView1.Nodes[0].ChildNodes.RemoveAt(1); 
+                //TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+                //TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(0);
+                //TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(0);
+                //TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(1);
+                //TreeView1.Nodes[0].ChildNodes[2].ChildNodes.RemoveAt(0);
+                //TreeView1.Nodes[0].ChildNodes[2].ChildNodes.RemoveAt(3);
+                //TreeView1.Nodes[0].ChildNodes.RemoveAt(3);
+                //TreeView1.Nodes[0].ChildNodes.RemoveAt(3); 
+                //break;
+           
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+                TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(1);
+                TreeView1.Nodes[0].ChildNodes[2].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes[2].ChildNodes.RemoveAt(3);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(3);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(3);
+                break;
+
+         
+            default:
+                TreeView1.Nodes.RemoveAt(0);
+                break;
+
+***************************************************************************************
+Working Sol for DA view - 12/09/2015
+
+ TreeView1.Nodes[0].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(3);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(3);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(2);
+                TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(1);
+                break;
+**********************************************************************************************
+
+
+**********************************
+Working SOlution
+      case (int)RoleType.CountyClerkAdmin:
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0); // MSG Board
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case n Create party not showing up
+                TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(0);//Judge view not showing up
+                TreeView1.Nodes[0].ChildNodes[1].ChildNodes.RemoveAt(0);
+               break;
+
+******************************************************************************************
+remove(0):Message Board  Gone
+ TreeView1.Nodes[0].ChildNodes.RemoveAt(1) :  Create Case (Not Showing)
+ TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(1) : Case Search (Not showing)
+TreeView1.Nodes[0].ChildNodes.RemoveAt(2); : Case Review --> TA,DA,Cler (not showing)
+TreeView1.Nodes[0].ChildNodes.RemoveAt(3): Case Review --> TA,DA,Clerk Pages (not showing)
+ 
+DataPath
+
+0-->Msg
+1-->Create Case
+2-->Create Party
+3-->CaseReview
+4->Reports
+5-->Mailing Labels
+6-->DownLoads
+
+
+    case(int)RoleType.TruancyJudge:
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0);//partysearch
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0);//casesearch
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0); //create case
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0);
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1);//whole search gone
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Reports & Mailing Labels
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Reports
+                TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(1);//DA
+                TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(1);//Clerk
+                break;
+
+  case (int)RoleType.CountyClerkAdmin:
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0); // MSG Board
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case
+                //TreeView1.Nodes[0].ChildNodes.RemoveAt(2); //Create Party.
+                //TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(0);
+              //  TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(0);
+                
+                break;
+
+   case (int)RoleType.CountyClerkAdmin:
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0); // MSG Board
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case n Create party not showing up
+              // TreeView1.Nodes[0].ChildNodes[0].ChildNodes.RemoveAt(0);  //Party Search 
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0);//Search Gone
+               // TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //CaseReview - All Gone
+               // TreeView1.Nodes[0].ChildNodes.RemoveAt(3); //Mailing Labels
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(2);
+                break;
+
+
+    case (int)RoleType.CountyClerkAdmin:
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(0); // MSG Board
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(1); //Create Case n Create party not showing up
+                TreeView1.Nodes[0].ChildNodes.RemoveAt(2); //Reports gone
+               TreeView1.Nodes[0].ChildNodes.RemoveAt(3); //Mailing Labels Gone
+               break;
+
